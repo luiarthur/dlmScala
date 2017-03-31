@@ -8,7 +8,8 @@ import dlmScala.helpers._
  * Univariate Normal DLMs are defined by a 4-tuple {F,G,V,W} for constant evolutions
  */
 case class DLM(F:DenseVector[Double], G:DenseMatrix[Double], 
-               V:Double, W:DenseMatrix[Double]) {
+               V:Double, W:DenseMatrix[Double], 
+               m0: DenseVector[Double], c0:DenseMatrix[Double]) {
 
   // Adding Two DLMS
   def +(that: DLM) {
