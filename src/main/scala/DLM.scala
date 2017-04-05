@@ -44,4 +44,17 @@ object DLM {
     }
   }
 
+  // TODO: Implement this (see WH Chapter 16)
+  case class Vec(F:DenseMatrix[Double], G:DenseMatrix[Double], 
+                 V:DenseMatrix[Double],
+                 m0:DenseVector[Double], c0:DenseMatrix[Double],
+                 delta:Vector[Double], dim:Vector[Int]) extends
+    Generic(F,G,V,m0,c0) { ??? }
+
+  // TODO: Implement this (See WH Chapter 16)
+  //case class Mat(F:DenseMatrix[Double], G:DenseMatrix[Double], 
+  //               V:DenseMatrix[Double],
+  //               m0:DenseVector[Double], c0:DenseMatrix[Double],
+  //               delta:Vector[Double], dim:Vector[Int]) extends
+  //  Generic(F,G,V,m0,c0) { ??? }
 }
