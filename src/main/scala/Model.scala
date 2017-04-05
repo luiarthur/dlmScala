@@ -2,7 +2,6 @@ package dlmScala
 
 object Model {
   import breeze.linalg.{DenseMatrix, DenseVector}
-  import dlmScala.Filter
 
   private[Model] trait GenericModel {
     // TODO: Implement Obs,State types
