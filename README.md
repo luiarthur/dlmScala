@@ -1,6 +1,6 @@
 # dlmScala
 
-DLMs in Scala
+Univariate DLMs in Scala
 
 
 # To Do
@@ -14,7 +14,7 @@ DLMs in Scala
 - [x] `Gibbs` object (for FFBS)
 
 
-# Interesting Excursions:
+# Interesting Excursions for Univariate and Multivariate?
 - type unions?
 ```scala
 type ~[A] = A=>Nothing

@@ -1,27 +1,20 @@
 package dlmScala
 
+
 object Model {
-  import breeze.linalg.{DenseMatrix, DenseVector}
+  import breeze.linalg.{DenseVector,DenseMatrix}
 
-  private[Model] trait GenericModel {
-    // TODO: Implement Obs,State types
-    type Obs
-    type State
+  // Filter: The result of a filter.
+  case class Filter[Obs,OVar,State,SVar,xDLM<:DLM.Generic](
+    y:List[Obs],   dlm:xDLM,
+    a:List[State], R:List[SVar],
+    f:List[Obs],   Q:List[OVar],
+    m:List[State], C:List[SVar]
+  )
 
-    // TODO: Implement these Generic Methods
-    def filter(y:Obs, dlm:DLM) = ???
-    def forecast(y:Obs) = ???
-    def smooth = ???
-    def backSample = ???
-  }
-
-  // FIXME!!!
-  object Univariate extends GenericModel {
-    ???  
-  }
-
-  object Multivariate extends GenericModel {
-    ???
-  }
-
+  // TODO: Implement these Generic Methods
+  def filter = ???
+  def forecast = ???
+  def smooth = ???
+  def backSample = ???
 }
