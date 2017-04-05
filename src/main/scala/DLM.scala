@@ -18,7 +18,9 @@ case class DLM(F:DenseVector[Double], G:DenseMatrix[Double],
     "V\n" + V.toString + "\n\n" +
     "W\n" + W.toString + "\n\n" +
     "m0\n" + m0.toString + "\n\n" +
-    "c0\n" + c0.toString
+    "c0\n" + c0.toString + "\n\n" +
+    "delta\n" + delta.toString + "\n\n" +
+    "dim\n" + dim.toString
   }
 
   // Adding Two DLMS (Superposition)
