@@ -37,3 +37,5 @@ def bla[T: (Int OR Double)#Lambda](x: T):Double = x match {
 bla(10)
 bla(11.1)
 ```
+
+Or try [this](http://stackoverflow.com/questions/3508077/how-to-define-type-disjunction-union-types).
