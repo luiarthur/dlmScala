@@ -50,6 +50,7 @@ object Model {
     def backSample(filt:Filt):Filt = ???
   }
 
+  // TODO: Implement the vector version
   object Vec extends Generic {
     type Obs = DenseVector[Double]
     type OVar = DenseMatrix[Double]
