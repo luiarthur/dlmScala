@@ -34,7 +34,6 @@ object Model {
     def backSample(param:Param) = ???
   }
 
-
   // TODO: Implement these
   //object Vec extends Generic
   //object Mat extends Generic
