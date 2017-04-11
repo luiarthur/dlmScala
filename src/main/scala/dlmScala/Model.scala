@@ -18,15 +18,49 @@ object Model {
   }
 
   trait GenericUni extends Generic {
-    type Obs = Double
+    type Obs = List[Double]
     type DLM = DLM.Uni
     type Forecast = Forecast.Uni
     type Prior = Prior.Default
     type Param <: Param.Generic
+  }
+
+  object UniDF extends GenericUni {
+    type Param = Param.UniDF
+
+    def computeW(
+      prevC:DenseMatrix[Double], G:DenseMatrix[Double],
+      delta:Vector[Double], dim:Vector[Int]
+    ) = {
+      val n = delta.length
+      val dimLower = ??? // 0 :: cumsum 
+      val dimUpper = ??? // cumsum 
+      require(dim.length == n)
+      val wList = Vector.tabulate(n){ i =>
+        val Gi = ???
+        delta(i) * Gi * C(???) * Gi.t
+      }
+    }
 
     def filter(y:Obs,dlm:DLM,init:Param,prior:Prior=new Prior) = {
-      //require(dlm.W.rows>0 || (prior.delta>0 && prior.delta<1))
-      //require(dlm.V>0 || (prior.n0>0 && prior.d0>0))
+
+      val N = y.length
+      val wList:List[DenseMatrix[Double]] = ???
+      val W:DenseMatrix[Double] = 
+        wList.foldLeft(DenseMatrix.zeros[Double](0,0))(blockDiag)
+
+      //def update(param:Param): Param = {
+      //  val n = param.n + 1
+      //  val R = 
+      //  val f = ???
+      //  val Q = ???
+      //  val m = ???
+      //  val C = ???
+      //  val n = ???
+      //  val d = ???
+      //  Param(a,R,f,Q,m,C,n,d)
+      //}
+
       ???
     }
     def forecast(y:Obs,dlm:DLM,params:List[Param],nAhead:Int=1) = ???
@@ -34,13 +68,14 @@ object Model {
     def backSample(y:Obs,dlm:DLM,params:List[Param]) = ???
   }
 
+  // TODO: Implement this
   object Uni extends GenericUni {
     type Param = Param.Uni
+    def filter(y:Obs,dlm:DLM,init:Param,prior:Prior=new Prior) = ???
+    def forecast(y:Obs,dlm:DLM,params:List[Param],nAhead:Int=1) = ???
+    def smooth(y:Obs,dlm:DLM,params:List[Param]) = ???
+    def backSample(y:Obs,dlm:DLM,params:List[Param]) = ???
   }
-  object UniDF extends GenericUni {
-    type Param = Param.UniDF
-  }
-
 
   // TODO: Implement these
   //object Vec extends Generic
