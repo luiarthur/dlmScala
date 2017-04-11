@@ -43,7 +43,8 @@ class TestSuite extends FunSuite {
   test ("Metropolis") {
     import dlmScala.mcmc._
     val p = .73
-    val n = 1000
+    val n = 5000
+    val eps = 0.03
     val x = List.fill(n)(
       if (p>scala.util.Random.nextDouble) 1 else 0)
     val sumx = x.sum
@@ -54,15 +55,16 @@ class TestSuite extends FunSuite {
             sumx * math.log(p) + (n-sumx) * math.log(1-p)
         }
         def lp(p:Double) = 0.0
-        def cs = 0.1
+        def cs = 0.03
         new State(Metropolis.Univariate.update(p,ll,lp,cs))
       }
     }
 
     val init = new State(0.5)
     val out = init.sample(1000,1000)
-    println("Truth:           " + p)
-    println("Estimate:        " + out.map(_.p).sum / 1000)
-    println("Acceptance Rate: " + out.map(_.p).distinct.length/1000.0)
+    //println("Truth:           "+p)
+    //println("Estimate:        "+out.map(_.p).sum / 1000)
+    //println("Acceptance Rate: "+out.map(_.p).distinct.length/1000.0)
+    assert(math.abs(out.map(_.p).sum / 1000 - p) < eps)
   }
 }
