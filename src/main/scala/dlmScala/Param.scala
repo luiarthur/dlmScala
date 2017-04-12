@@ -14,11 +14,12 @@ object Param {
     m:DVec,C:DMat) extends Generic(a,R,f,Q,m,C)
 
   // Univariate with Discount Factors
+  // S0 = d0/n0
   case class UniDF(
-    a:DVec,R:DMat,
-    f:Double,Q:Double,
+    a:DVec=DenseVector.zeros[Double](0),R:DMat=DenseMatrix.zeros[Double](0,0),
+    f:Double=0.0,Q:Double=0.0,
     m:DVec,C:DMat,
-    n:Double,d:Double) extends Generic(a,R,f,Q,m,C)
+    n:Double=1,S:Double=1) extends Generic(a,R,f,Q,m,C)
 
   // TODO: Implement these:
   case class Vec()

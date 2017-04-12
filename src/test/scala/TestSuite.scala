@@ -1,7 +1,7 @@
 import org.scalatest.FunSuite
 import breeze.linalg.{DenseMatrix, DenseVector}
 import dlmScala.util._
-import dlmScala.DLM 
+import dlmScala._
 
 class TestSuite extends FunSuite {
 
@@ -66,5 +66,33 @@ class TestSuite extends FunSuite {
     //println("Estimate:        "+out.map(_.p).sum / 1000)
     //println("Acceptance Rate: "+out.map(_.p).distinct.length/1000.0)
     assert(math.abs(out.map(_.p).sum / 1000 - p) < eps)
+  }
+
+  test("Filter UniDF") {
+    val R = org.ddahl.rscala.RClient()
+
+    val n = 30
+    val y = List.tabulate(n)(i => i + scala.util.Random.nextGaussian)
+    val F = DenseVector(1.0,0.0)
+    val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
+    val V = 1.0
+    val W = DenseMatrix.zeros[Double](0,0)
+    val dim = Vector(2)
+
+    val dlm = new DLM.Uni(F,G,V,W,dim)
+    val prior = new Prior.UniDF(Vector(0.95))
+    val m0 = DenseVector(1.0,0.0)
+    val C0 = DenseMatrix.eye[Double](2)
+    val init = new Param.UniDF(m=m0,C=C0)
+    val mod = timer{ Model.UniDF.filter(y,dlm,init,prior) }
+
+    R.set("f",mod.map(_.f).toArray)
+    R.set("y",y.toArray)
+    R eval """
+      plot(y,col='grey',pch=20)
+      points(f,col='blue',pch=20)
+    """
+
+    scala.io.StdIn.readLine()
   }
 }
