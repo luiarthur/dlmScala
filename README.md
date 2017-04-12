@@ -25,10 +25,10 @@ object DLM {
     // This is the type of the state parameter (vector, matrix)
     type State
 
-    def filter(y:Obs,init:Param,prior:Prior):List[Param]
-    def forecast(y:Obs,filt:List[Param],nAhead:Int=1):List[(Obs,ObsVar)]
-    def smooth(y:Obs,filt:List[Param]):List[(Obs,ObsVar)]
-    def backSample(y:Obs,filt:List[Param]):List[State]
+    def filter(y:List[Obs],init:Param,prior:Prior):List[Param]
+    def forecast(y:List[Obs],filt:List[Param],nAhead:Int=1):List[(Obs,ObsVar)]
+    def smooth(y:List[Obs],filt:List[Param]):List[(Obs,ObsVar)]
+    def backSample(y:List[Obs],filt:List[Param]):List[State]
   }
 
 }
