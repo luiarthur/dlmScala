@@ -13,6 +13,27 @@ Univariate DLMs in Scala
 - [ ] `backSample` method
 - [x] `Gibbs` object (for FFBS)
 
+- Merge Model class with DLM class
+```scala
+object DLM {
+  abstract class Generic(F:Any,G:Any,V:Any,W:Any) {
+    type Obs
+    type ObsVar
+    type Prior
+    // Param is the posterior updates like in Param.scala
+    type Param 
+    // This is the type of the state parameter (vector, matrix)
+    type State
+
+    def filter(y:Obs,init:Param,prior:Prior):List[Param]
+    def forecast(y:Obs,filt:List[Param],nAhead:Int=1):List[(Obs,ObsVar)]
+    def smooth(y:Obs,filt:List[Param]):List[(Obs,ObsVar)]
+    def backSample(y:Obs,filt:List[Param]):List[State]
+  }
+
+}
+```
+
 
 # Interesting Excursions for Univariate and Multivariate?
 - type unions?
@@ -39,3 +60,4 @@ bla(11.1)
 ```
 
 Or try [this](http://stackoverflow.com/questions/3508077/how-to-define-type-disjunction-union-types).
+
