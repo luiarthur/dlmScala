@@ -5,7 +5,6 @@ import dlmScala.util._
 
 object DLM2 {
 
-  // FIXME: Can I bound the types?
   abstract class Generic(F:Any, G:Any, V:Any, W:Any) {
     // Type of observations (e.g. Double)
     type Obs
@@ -24,9 +23,7 @@ object DLM2 {
     def backSample(y:List[Obs], filt:List[Param]): List[State]
   }
 
-  /** Univariate Normal DLMs are defined by a 4-tuple {F,G,V,W} 
-   *  for constant evolutions
-   */
+  // Univariate Normal DLMs are defined by a 3-tuple {F,G,V}
   case class UniDF(
     F:DenseVector[Double], G:DenseMatrix[Double], 
     V:Double, delta:Vector[Double], dim:Vector[Int]
@@ -52,22 +49,20 @@ object DLM2 {
       UniDF(newF, newG, newV, newDelta, newDim)
     }
 
+    require(dim.length == delta.length, "dim.length == delta.length")
+    val numComponents = delta.length
+    val cumDim = dim.scanLeft(0)(_+_-1)
+    val dimLower = cumDim.dropRight(1)
+    val dimUpper = cumDim.tail
+
     type Obs = Double
     type ObsVar = Double
-    type Prior = Prior.UniDF
+    type Prior = Prior.Default
     type Param = Param.UniDF
     type State = DenseVector[Double]
 
     def computeW(prevC:DenseMatrix[Double]) = {
-
-      val n = delta.length
-      require(dim.length == n)
-
-      val cumDim = dim.scanLeft(0)(_+_-1)
-      val dimLower = cumDim.dropRight(1)
-      val dimUpper = cumDim.tail
-
-      val wList = Vector.tabulate(n){ i =>
+      val wList = Vector.tabulate(numComponents){ i =>
         val Gi = 
           G(dimLower(i) to dimUpper(i), dimLower(i) to dimUpper(i))
         val prevCi = 
@@ -80,7 +75,7 @@ object DLM2 {
     }
 
 
-    def filter(y:List[Obs], init:Param, prior:Prior): List[Param] = {
+    def filter(y:List[Obs], init:Param, prior:Prior=new Prior): List[Param] = {
       def update(prevAndY:(Param,Obs)): Param = {
         val (prev, yi) = prevAndY
         val n = prev.n + 1

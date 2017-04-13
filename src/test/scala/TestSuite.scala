@@ -95,4 +95,32 @@ class TestSuite extends FunSuite {
 
     scala.io.StdIn.readLine()
   }
+
+  test("DLM2 Filter UniDF") {
+    val R = org.ddahl.rscala.RClient()
+
+    val n = 30
+    val y = List.tabulate(n)(i => i + scala.util.Random.nextGaussian)
+    val F = DenseVector(1.0,0.0)
+    val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
+    val V = 1.0
+    val dim = Vector(2)
+    val delta = Vector(0.95)
+
+    val dlm = new DLM2.UniDF(F,G,V,delta,dim)
+    val m0 = DenseVector(1.0,0.0)
+    val C0 = DenseMatrix.eye[Double](2)
+    val init = new Param.UniDF(m=m0,C=C0)
+    val filt = timer{ dlm.filter(y,init) }
+
+    R.set("f",filt.map(_.f).toArray)
+    R.set("y",y.toArray)
+    R eval """
+      plot(y,col='grey',pch=20)
+      points(f,col='blue',pch=20)
+    """
+
+    scala.io.StdIn.readLine()
+  }
+
 }
