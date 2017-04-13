@@ -1,9 +1,11 @@
 package dlmScala
 
-// For use with FFBS
+/* For use with FFBS.
+ * Put prior classes here.
+ */
 object Prior {
 
   trait Generic
   class Default() extends Generic
-  case class UniDF(delta: Vector[Double]) extends Generic
+
 }

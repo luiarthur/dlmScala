@@ -17,24 +17,26 @@ class TestSuite extends FunSuite {
   }
 
   test("superposition") {
-    def genDLM(x: Double, d: Int) = {
-      val F = DenseVector.fill(d)(x)
-      val G = DenseMatrix.eye[Double](d) * x
+    def genDLM(x: Double, delta:Double, dim: Int) = {
+      require(delta>0 && delta <=1, "0 < delta <= 1")
+      require(dim>0, "dim>0")
+      val F = DenseVector.fill(dim)(x)
+      val G = DenseMatrix.eye[Double](dim) * x
       val V = x
-      val W = G * 2.0
-      val dim = Vector(d)
-      DLM.Uni(F,G,V,W,dim)
+      val deltaV = Vector(delta)
+      val dimV = Vector(dim)
+      DLM.UniDF(F,G,V,deltaV,dimV)
     }
 
-    val dlm1 = genDLM(1.0, 2)
-    val dlm2 = genDLM(2.0, 3)
+    val dlm1 = genDLM(1.0, 0.95, 2)
+    val dlm2 = genDLM(2.0, 0.90, 3)
 
     val dlm3 = dlm1 + dlm2
 
     assert(dlm3.F == DenseVector(1.0,1.0,2.0,2.0,2.0))
     assert(dlm3.G == blockDiag(dlm1.G, dlm2.G))
     assert(dlm3.V == 1.0 + 2.0)
-    assert(dlm3.W == blockDiag(dlm1.W, dlm2.W))
+    assert(dlm3.delta == Vector(0.95, 0.90))
     assert(dlm3.dim == Vector(2, 3))
 
     //print(dlm3)
@@ -68,35 +70,7 @@ class TestSuite extends FunSuite {
     assert(math.abs(out.map(_.p).sum / 1000 - p) < eps)
   }
 
-  test("Filter UniDF") {
-    val R = org.ddahl.rscala.RClient()
-
-    val n = 30
-    val y = List.tabulate(n)(i => i + scala.util.Random.nextGaussian)
-    val F = DenseVector(1.0,0.0)
-    val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
-    val V = 1.0
-    val W = DenseMatrix.zeros[Double](0,0)
-    val dim = Vector(2)
-
-    val dlm = new DLM.Uni(F,G,V,W,dim)
-    val prior = new Prior.UniDF(Vector(0.95))
-    val m0 = DenseVector(1.0,0.0)
-    val C0 = DenseMatrix.eye[Double](2)
-    val init = new Param.UniDF(m=m0,C=C0)
-    val mod = timer{ Model.UniDF.filter(y,dlm,init,prior) }
-
-    R.set("f",mod.map(_.f).toArray)
-    R.set("y",y.toArray)
-    R eval """
-      plot(y,col='grey',pch=20)
-      points(f,col='blue',pch=20)
-    """
-
-    scala.io.StdIn.readLine()
-  }
-
-  test("DLM2 Filter UniDF") {
+  test("DLM Filter UniDF") {
     val R = org.ddahl.rscala.RClient()
 
     val n = 30
@@ -107,17 +81,28 @@ class TestSuite extends FunSuite {
     val dim = Vector(2)
     val delta = Vector(0.95)
 
-    val dlm = new DLM2.UniDF(F,G,V,delta,dim)
+    val dlm = new DLM.UniDF(F,G,V,delta,dim)
     val m0 = DenseVector(1.0,0.0)
     val C0 = DenseMatrix.eye[Double](2)
     val init = new Param.UniDF(m=m0,C=C0)
     val filt = timer{ dlm.filter(y,init) }
+    val fc = timer{ dlm.forecast(y,filt,nAhead=n) }
 
     R.set("f",filt.map(_.f).toArray)
     R.set("y",y.toArray)
+    R.set("fc.f",fc.map(_._1).toArray)
+    R.set("fc.Q",fc.map(_._2).toArray)
     R eval """
-      plot(y,col='grey',pch=20)
+      library(rcommon)
+      N <- length(y)
+      nAhead <- length(fc.f)
+      ci <- sapply(1:nAhead, function(i) 
+        fc.f[i] + sqrt(fc.Q[i]) * qt(c(.025,.975),df=N-1)
+      )
+      plot(y,col='grey',pch=20,xlim=c(0,N+nAhead),ylim=range(y,ci))
       points(f,col='blue',pch=20)
+      points((N+1):(N+nAhead), fc.f, col='red',pch=20)
+      color.btwn.mat((N+1):(N+nAhead), t(ci))
     """
 
     scala.io.StdIn.readLine()

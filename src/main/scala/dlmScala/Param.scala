@@ -7,13 +7,7 @@ object Param {
 
   abstract class Generic(a:Any,R:Any,f:Any,Q:Any,m:Any,C:Any)
 
-  // Univariate
-  case class Uni(
-    a:DVec,R:DMat,
-    f:Double,Q:Double,
-    m:DVec,C:DMat) extends Generic(a,R,f,Q,m,C)
-
-  // Univariate with Discount Factors
+  // Univariate with Unknown V
   // S0 = d0/n0
   case class UniDF(
     a:DVec=DenseVector.zeros[Double](0),R:DMat=DenseMatrix.zeros[Double](0,0),
@@ -21,7 +15,14 @@ object Param {
     m:DVec,C:DMat,
     n:Double=1,S:Double=1) extends Generic(a,R,f,Q,m,C)
 
-  // TODO: Implement these:
-  case class Vec()
-  case class Mat()
+  // Univariate
+  case class Uni(
+    a:DVec,R:DMat,
+    f:Double,Q:Double,
+    m:DVec,C:DMat) extends Generic(a,R,f,Q,m,C)
+
+  /* TODO: Implement these:
+   * case class Vec()
+   * case class Mat()
+   * */
 }
