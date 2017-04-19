@@ -106,11 +106,11 @@ object DLM {
 
       def updateAll(dat:List[Obs], params:List[Param]): List[Param] = {
         if (dat == Nil) params else {
-          updateAll(dat.tail, update(params.head,dat.head) :: params)
+          updateAll(dat.tail, update(params.head, dat.head) :: params)
         }
       }
 
-      updateAll(y, List(init)).reverse
+      updateAll(y, List(init)).reverse.tail
     }
 
     /** See W&H p.107 Thm 4.4 */
@@ -119,12 +119,12 @@ object DLM {
       type Forecast = (State,StateVar,Obs,ObsVar)
 
       def oneAhead(aRfQ: Forecast) ={
-        val (a,r,f,q) = aRfQ
-        val newa = G*a
-        val newR = G* r *G.t + computeW(r)
-        val newf = F.t * a
-        val newQ = F.t * newR * F + lastParam.S
-        (newa, newR, newf, newQ)
+        val (preva, prevR, prevf, prevQ) = aRfQ
+        val a = G * preva
+        val R = G * prevR * G.t + computeW(prevR)
+        val f = F.t * a
+        val Q = F.t * R * F + lastParam.S
+        (a, R, f, Q)
       }
 
       def pred(i:Int, ls:List[Forecast]): List[Forecast] = {
@@ -135,12 +135,16 @@ object DLM {
 
       pred( 
         nAhead, 
-        List((lastParam.a, lastParam.R, lastParam.f, lastParam.Q))
-      ).map( z => (z._3, z._4) ).reverse
+        List((lastParam.m, lastParam.C, lastParam.f, lastParam.Q))
+      ).map( z => (z._3, z._4) ).reverse.tail
     }
 
-    def smooth(y:List[Obs], filt:List[Param]): List[(Obs,ObsVar)] = ???
-    def backSample(y:List[Obs], filt:List[Param]): List[State] = ???
+    def smooth(y:List[Obs], filt:List[Param]): List[(Obs,ObsVar)] = {
+      ???
+    }
+    def backSample(y:List[Obs], filt:List[Param]): List[State] = {
+      ???
+    }
   }
 
   // TODO: Implement this (see WH Chapter 16)

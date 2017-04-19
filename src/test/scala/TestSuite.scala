@@ -73,7 +73,8 @@ class TestSuite extends FunSuite {
   test("DLM Filter UniDF") {
     val R = org.ddahl.rscala.RClient()
 
-    val n = 30
+    val n = 20
+    val nAhead = 30
     val y = List.tabulate(n)(i => i + scala.util.Random.nextGaussian)
     val F = DenseVector(1.0,0.0)
     val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
@@ -86,12 +87,12 @@ class TestSuite extends FunSuite {
     val C0 = DenseMatrix.eye[Double](2)
     val init = new Param.UniDF(m=m0,C=C0)
     val filt = timer{ dlm.filter(y,init) }
-    val fc = timer{ dlm.forecast(y,filt,nAhead=n) }
+    val fc = timer{ dlm.forecast(y,filt,nAhead=nAhead) }
 
-    R.set("f",filt.map(_.f).toArray)
-    R.set("y",y.toArray)
-    R.set("fc.f",fc.map(_._1).toArray)
-    R.set("fc.Q",fc.map(_._2).toArray)
+    R.set("f", filt.map(_.f).toArray)
+    R.set("y", y.toArray)
+    R.set("fc.f", fc.map(_._1).toArray)
+    R.set("fc.Q", fc.map(_._2).toArray)
     R eval """
       library(rcommon)
       N <- length(y)
@@ -100,8 +101,8 @@ class TestSuite extends FunSuite {
         fc.f[i] + sqrt(fc.Q[i]) * qt(c(.025,.975),df=N-1)
       )
       plot(y,col='grey',pch=20,xlim=c(0,N+nAhead),ylim=range(y,ci))
-      points(f,col='blue',pch=20)
-      points((N+1):(N+nAhead), fc.f, col='red',pch=20)
+      points(f,col='blue')
+      points((N+1):(N+nAhead), fc.f, col='red')
       color.btwn.mat((N+1):(N+nAhead), t(ci))
     """
 
