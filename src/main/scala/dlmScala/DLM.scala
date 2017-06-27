@@ -147,6 +147,10 @@ object DLM {
     }
   }
 
+  // TODO: Implement this
+  // case class Uni()
+  //(see final of TS_AMS233 repo at ucsc for FFBS example)
+
   // TODO: Implement this (see WH Chapter 16)
   //case class Vec(
   //  F:DenseMatrix[Double], G:DenseMatrix[Double], 
@@ -155,4 +159,7 @@ object DLM {
 
   // TODO: Implement this (See WH Chapter 16)
   //case class Mat()
+
+  // TODO: Implement this (see bruno sanso's paper on spatio-termporal modeling with dynamic models)
+  //case class SpatioTemporal()
 }
