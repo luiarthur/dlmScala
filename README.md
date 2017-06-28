@@ -10,7 +10,8 @@ Univariate DLMs in Scala
 - [ ] `filter` method
 - [ ] `forecast` method
 - [ ] `smooth` method
-- [ ] `backSample` method
+- [ ] `backSample` method (see p. 114 of WH)
+-
 - [x] `Gibbs` object (for FFBS)
 
 - Merge Model class with DLM class
