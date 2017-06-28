@@ -73,9 +73,9 @@ class TestSuite extends FunSuite {
   test("DLM Filter UniDF") {
     val R = org.ddahl.rscala.RClient()
 
-    val n = 20
+    val n = 100
     val nAhead = 30
-    val y = List.tabulate(n)(i => i + scala.util.Random.nextGaussian)
+    val y = List.tabulate(n)(i => math.log(i*i+1) + scala.util.Random.nextGaussian)
     val F = DenseVector(1.0,0.0)
     val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
     val V = 1.0
