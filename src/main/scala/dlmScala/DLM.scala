@@ -57,9 +57,9 @@ object DLM {
 
     require(dim.length == delta.length, "dim.length == delta.length")
     val numComponents = delta.length
-    val cumDim = dim.scanLeft(0)(_+_-1)
+    val cumDim = dim.scanLeft(0)(_+_)
     val dimLower = cumDim.dropRight(1)
-    val dimUpper = cumDim.tail
+    val dimUpper = cumDim.tail.map(_ - 1)
     // discount factor 
     val df = delta.map( d => (1-d)/d )
 
@@ -92,6 +92,7 @@ object DLM {
         val n = prev.n + 1
         val W = computeW(prev.C)
         val a = G * prev.m
+        //val R = G * prev.C * G.t / delta.head//+ W
         val R = G * prev.C * G.t + W
         val f = F.t * a
         val Q = F.t * R * F + prev.S
