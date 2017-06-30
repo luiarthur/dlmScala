@@ -28,6 +28,19 @@ object util {
     DenseMatrix.vertcat(upper,lower)
   }
 
+  /* Generates a vector of size p with the first element being 1
+   * and the other elements being 0
+   */
+  def E(p: Int) = {
+    DenseVector.vertcat(DenseVector(1.0), DenseVector.zeros[Double](p-1))
+  }
+
+  /* Generates a Jordan block matrix of dimensions pxp
+   */
+  def J(p: Int) = {
+    DenseMatrix.tabulate(p,p)( (i,j) => if (i==j || j-i==1) 1.0 else 0.0)
+  }
+
 
   /** times the execution of a block and returns 
    *  the result of the block 

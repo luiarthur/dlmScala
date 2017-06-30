@@ -73,18 +73,26 @@ class TestSuite extends FunSuite {
   test("DLM Filter UniDF") {
     val R = org.ddahl.rscala.RClient()
 
-    val n = 100
-    val nAhead = 30
-    val y = List.tabulate(n)(i => math.log(i*i+1) + scala.util.Random.nextGaussian)
-    val F = DenseVector(1.0,0.0)
-    val G = DenseMatrix( (1.0,1.0), (0.0,1.0) )
-    val V = 1.0
-    val dim = Vector(2)
-    val delta = Vector(0.95)
+    val buffer = scala.io.Source.fromFile("src/main/resources/MCD.csv")
+    var arr = Array[Double]()
+    for (line <- buffer.getLines.toArray.tail) {
+      arr +:= line.split(",").dropRight(1).last.toDouble
+    }
+    val y = arr.toList.reverse
+    val n = y.length
 
-    val dlm = new DLM.UniDF(F,G,V,delta,dim)
-    val m0 = DenseVector(1.0,0.0)
-    val C0 = DenseMatrix.eye[Double](2)
+    //val n = 100
+    val nAhead = 300
+    //val y = List.tabulate(n)(i => math.log(i*i+1) + scala.util.Random.nextGaussian)
+    //val dlm = new DLM.UniDF(E(2),J(2),V,delta = Vector(0.95), dim=Vector(2))
+    val dlm1 = new DLM.UniDF(E(2),J(2),V=10,delta = Vector(1), dim=Vector(2))
+    val dlm2 = new DLM.UniDF(E(2),DenseMatrix((.95, 1.0), (.04, 0.0)),
+                             V=0, delta=Vector(1), dim=Vector(2))
+    val dlm = dlm1 + dlm2
+    print(dlm)
+
+    val m0 = DenseVector.zeros[Double](dlm.F.length)
+    val C0 = DenseMatrix.eye[Double](dlm.F.length)
     val init = new Param.UniDF(m=m0,C=C0)
     val filt = timer{ dlm.filter(y,init) }
     val fc = timer{ dlm.forecast(y,filt,nAhead=nAhead) }
@@ -93,12 +101,14 @@ class TestSuite extends FunSuite {
     R.set("y", y.toArray)
     R.set("fc.f", fc.map(_._1).toArray)
     R.set("fc.Q", fc.map(_._2).toArray)
+    println(fc.map(_._2))
     R eval """
       library(rcommon)
       N <- length(y)
       nAhead <- length(fc.f)
       ci <- sapply(1:nAhead, function(i) 
-        fc.f[i] + sqrt(fc.Q[i]) * qt(c(.025,.975),df=N-1)
+        #fc.f[i] + sqrt(fc.Q[i]) * qt(c(.025,.975),df=N-1)
+        fc.f[i] + sqrt(fc.Q[i]) * c(-2,2)
       )
       plot(y,col='grey',pch=20,xlim=c(0,N+nAhead),ylim=range(y,ci))
       points(f,col='blue')
